@@ -13,7 +13,7 @@ func main() {
 
 	todoRepo := repo.CreateTodoRepo()
 	todoService := service.CreateTodoService(todoRepo)
-	todoHandler := handler.CreateTodoHandler(router, todoService)
+	todoHandler := handler.CreateTodoHandler(todoService)
 
 	{
 		router.POST("/items", todoHandler.CreateTodo)

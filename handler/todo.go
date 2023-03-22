@@ -19,7 +19,7 @@ type TodoHandler struct {
 	TodoService TodoRepo
 }
 
-func CreateTodoHandler(r *gin.Engine, todoService TodoRepo) TodoHandler {
+func CreateTodoHandler(todoService TodoRepo) TodoHandler {
 	return TodoHandler{todoService}
 }
 
