@@ -1,0 +1,13 @@
+version: "3.9"
+
+services:
+  database:
+    container_name: database
+    image: postgres:12.8
+    restart: always
+    environment:
+      - POSTGRES_USER=dvbtrung23
+      - POSTGRES_PASSWORD=dvbt230220
+      - POSTGRES_DB=todos
+    ports:
+      - 5432:5432

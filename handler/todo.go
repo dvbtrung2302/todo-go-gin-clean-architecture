@@ -12,7 +12,7 @@ type TodoRepo interface {
 	GetAllTodos() ([]*entity.Todo, error)
 	GetTodoById(id string) (*entity.Todo, error)
 	UpdateTodoById(id string, todo *entity.Todo) (*entity.Todo, error)
-	DeleteTodoById(id string) (*entity.Todo, error)
+	DeleteTodoById(id string) error
 }
 
 type TodoHandler struct {
@@ -100,11 +100,10 @@ func (th *TodoHandler) DeleteTodoById(ctx *gin.Context) {
 		return
 	}
 
-	todo, err := th.TodoService.DeleteTodoById(idStr)
+	err = th.TodoService.DeleteTodoById(idStr)
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
-
-	ctx.JSON(http.StatusOK, gin.H{"data deleted": todo})
+	ctx.JSON(http.StatusOK, gin.H{"deleted successfully item:": idStr})
 }

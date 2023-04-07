@@ -9,7 +9,7 @@ type TodoRepo interface {
 	GetAllTodos() ([]*entity.Todo, error)
 	GetTodoById(id string) (*entity.Todo, error)
 	UpdateTodoById(id string, todo *entity.Todo) (*entity.Todo, error)
-	DeleteTodoById(id string) (*entity.Todo, error)
+	DeleteTodoById(id string) error
 }
 
 type TodoService struct {
@@ -36,6 +36,6 @@ func (ts *TodoService) UpdateTodoById(id string, todo *entity.Todo) (*entity.Tod
 	return ts.TodoRepo.UpdateTodoById(id, todo)
 }
 
-func (ts *TodoService) DeleteTodoById(id string) (*entity.Todo, error) {
+func (ts *TodoService) DeleteTodoById(id string) error {
 	return ts.TodoRepo.DeleteTodoById(id)
 }

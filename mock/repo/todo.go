@@ -45,12 +45,8 @@ func (ts *MockTodoRepo) UpdateTodoById(id string, todo *entity.Todo) (*entity.To
 	return args.Get(0).(*entity.Todo), args.Error(1)
 }
 
-func (ts *MockTodoRepo) DeleteTodoById(id string) (*entity.Todo, error) {
+func (ts *MockTodoRepo) DeleteTodoById(id string) error {
 	args := ts.Called(id)
 
-	if args.Get(0) == nil {
-		return nil, args.Error(1)
-	}
-
-	return args.Get(0).(*entity.Todo), args.Error(1)
+	return args.Error(1)
 }

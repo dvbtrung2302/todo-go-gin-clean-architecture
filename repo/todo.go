@@ -1,70 +1,75 @@
 package repo
 
 import (
-	"errors"
-	"time"
+	"fmt"
 	"todo-backend/entity"
 	"todo-backend/service"
 
-	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type TodoRepositoryImpl struct {
-	todos []*entity.Todo
+	DB *gorm.DB
 }
 
-func CreateTodoRepo() service.TodoRepo {
-	return &TodoRepositoryImpl{make([]*entity.Todo, 0)}
+func CreateTodoRepo(DB *gorm.DB) service.TodoRepo {
+	return &TodoRepositoryImpl{DB}
 }
 
 func (repo *TodoRepositoryImpl) CreateTodo(todo *entity.Todo) (*entity.Todo, error) {
-	if todo.Content == "" {
-		return nil, errors.New("Content is empty")
+	err := repo.DB.Create(&todo).Error
+	if err != nil {
+		fmt.Printf("[TodoRepoImpl.CreateTodo] error execute query %v \n", err)
+		return nil, fmt.Errorf("failed insert data")
 	}
 
-	id := uuid.New()
-	todo.ID = id.String()
-	todo.Status = "new"
-	todo.CreatedAt = time.Now()
-	todo.UpdateAt = time.Now()
-
-	repo.todos = append(repo.todos, todo)
 	return todo, nil
 }
 
 func (repo *TodoRepositoryImpl) GetAllTodos() ([]*entity.Todo, error) {
-	return repo.todos, nil
+	var todos []*entity.Todo
+
+	err := repo.DB.Find(&todos).Error
+	if err != nil {
+		fmt.Printf("[TodoRepoImpl.GetAllTodos] error execute query %v \n", err)
+		return nil, fmt.Errorf("failed view all data")
+	}
+
+	return todos, nil
 }
 
 func (repo *TodoRepositoryImpl) GetTodoById(id string) (*entity.Todo, error) {
-	for _, todo := range repo.todos {
-		if todo.ID == id {
-			return todo, nil
-		}
+	var todo = entity.Todo{}
+
+	err := repo.DB.Where("id = ?", id).First(&todo).Error
+	if err != nil {
+		fmt.Printf("[TodoRepoImpl.GetTodoById] error execute query %v \n", err)
+		return nil, fmt.Errorf("id is not exsis")
 	}
 
-	return nil, errors.New("Todo not found")
+	return &todo, nil
 }
 
 func (repo *TodoRepositoryImpl) UpdateTodoById(id string, todo *entity.Todo) (*entity.Todo, error) {
-	for _, todoItem := range repo.todos {
-		if todoItem.ID == id {
-			todoItem.Content = todo.Content
-			todoItem.UpdateAt = time.Now()
-			return todoItem, nil
-		}
+	var upTodo = entity.Todo{}
+
+	err := repo.DB.Where("id = ?", id).First(&upTodo, id).Updates(todo).Error
+	if err != nil {
+		fmt.Printf("[TodoRepoImpl.UpdateTodoById] error execute query %v \n", err)
+		return nil, fmt.Errorf("failed update data")
 	}
 
-	return nil, errors.New("Todo not found")
+	return &upTodo, nil
 }
 
-func (repo *TodoRepositoryImpl) DeleteTodoById(id string) (*entity.Todo, error) {
-	for i, todoItem := range repo.todos {
-		if todoItem.ID == id {
-			repo.todos = append(repo.todos[:i], repo.todos[i+1:]...)
-			return todoItem, nil
-		}
+func (repo *TodoRepositoryImpl) DeleteTodoById(id string) error {
+	var todo = entity.Todo{}
+
+	err := repo.DB.Where("id = ?", id).First(&todo).Delete(&todo).Error
+	if err != nil {
+		fmt.Printf("[TodoRepoImpl.DeleteTodoById] error execute query %v \n", err)
+		return fmt.Errorf("id is not exsis")
 	}
 
-	return nil, errors.New("Todo not found")
+	return nil
 }

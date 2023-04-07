@@ -1,17 +1,20 @@
 package main
 
 import (
+	"todo-backend/db"
 	"todo-backend/handler"
 	"todo-backend/repo"
 	"todo-backend/service"
 
 	"github.com/gin-gonic/gin"
+	_ "github.com/lib/pq"
 )
 
 func main() {
+	DB := db.Init()
 	router := gin.Default()
 
-	todoRepo := repo.CreateTodoRepo()
+	todoRepo := repo.CreateTodoRepo(DB)
 	todoService := service.CreateTodoService(todoRepo)
 	todoHandler := handler.CreateTodoHandler(todoService)
 

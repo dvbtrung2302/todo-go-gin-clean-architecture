@@ -15,11 +15,11 @@ import (
 func createMockTodoItem(content string) entity.Todo {
 	var todo entity.Todo
 
-	todo.ID = "mock_id"
+	todo.ID = 1
 	todo.Content = content
 	todo.Status = "new"
 	todo.CreatedAt = time.Now()
-	todo.UpdateAt = time.Now()
+	todo.UpdatedAt = time.Now()
 
 	return todo
 }
@@ -145,11 +145,9 @@ func TestTodo_DeleteTodoById(t *testing.T) {
 		todoRepo.On("DeleteTodoById", mock.Anything).Once().Return(&mockTodo, nil)
 
 		todoService := &TodoService{todoRepo}
-		todo, err := todoService.DeleteTodoById("mock_id")
+		err := todoService.DeleteTodoById("mock_id")
 
 		assert.Nil(t, err)
-		assert.NotNil(t, todo)
-		assert.Equal(t, todo, &mockTodo)
 	})
 
 	t.Run("id not found", func(t *testing.T) {
@@ -158,9 +156,8 @@ func TestTodo_DeleteTodoById(t *testing.T) {
 		todoRepo.On("DeleteTodoById", mock.Anything).Once().Return(nil, errors.New("Todo not found"))
 
 		todoService := &TodoService{todoRepo}
-		todo, err := todoService.DeleteTodoById("mock_id")
+		err := todoService.DeleteTodoById("mock_id")
 
-		assert.Nil(t, todo)
 		assert.NotNil(t, err)
 		assert.Equal(t, errors.New("Todo not found"), err)
 	})
