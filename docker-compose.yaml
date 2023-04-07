@@ -1,13 +1,28 @@
 version: "3.9"
 
 services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    ports:
+      - "8080:8080"
+    depends_on:
+      - database
   database:
     container_name: database
-    image: postgres:12.8
+    image: postgres:alpine
     restart: always
     environment:
-      - POSTGRES_USER=dvbtrung23
-      - POSTGRES_PASSWORD=dvbt230220
-      - POSTGRES_DB=todos
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
     ports:
       - 5432:5432
+    volumes:
+      - postgres-db:/var/lib/postgresql/data
+
+volumes:
+  postgres-db:

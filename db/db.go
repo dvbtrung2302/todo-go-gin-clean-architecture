@@ -1,7 +1,9 @@
 package db
 
 import (
+	"fmt"
 	"log"
+	"os"
 	"todo-backend/entity"
 
 	"gorm.io/driver/postgres"
@@ -9,8 +11,13 @@ import (
 )
 
 func Init() *gorm.DB {
-	connStr := "postgresql://dvbtrung23:dvbt230220@localhost:5432/todos?sslmode=disable"
-	db, err := gorm.Open(postgres.Open(connStr), &gorm.Config{})
+	dsn := fmt.Sprintf(
+		"postgresql://%s:%s@database:5432/%s?sslmode=disable",
+		os.Getenv("DB_USER"),
+		os.Getenv("DB_PASSWORD"),
+		os.Getenv("DB_NAME"),
+	)
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
 	if err != nil {
 		log.Fatalln(err)
