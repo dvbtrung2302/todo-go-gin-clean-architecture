@@ -3,7 +3,7 @@ package entity
 import "time"
 
 type Todo struct {
-	Id        string
+	ID        string
 	Status    string
 	Content   string
 	CreatedAt time.Time
